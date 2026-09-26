@@ -1,0 +1,55 @@
+// Zero-dependency static file server for the portfolio.
+// Serves portfolio/projects/ so the main page loads at http://localhost:3000/
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "portfolio", "projects");
+const PORT = process.env.PORT || 3000;
+
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".jsx": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".avif": "image/avif",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+};
+
+const server = http.createServer((req, res) => {
+  let urlPath = decodeURIComponent(req.url.split("?")[0]);
+  if (urlPath === "/") urlPath = "/index.html";
+
+  // Resolve inside ROOT and block path traversal.
+  const filePath = path.join(ROOT, urlPath);
+  if (!filePath.startsWith(ROOT)) {
+    res.writeHead(403);
+    res.end("Forbidden");
+    return;
+  }
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("404 Not Found: " + urlPath);
+      return;
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
+    res.end(data);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Sneha's portfolio running at http://localhost:${PORT}/`);
+});

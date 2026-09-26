@@ -1,0 +1,12 @@
+{
+  "name": "snehaportfolio",
+  "version": "1.0.0",
+  "description": "Sneha Biradar's portfolio — bento grid single-page site",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

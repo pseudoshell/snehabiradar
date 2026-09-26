@@ -1,0 +1,9 @@
+# Raw design-tool uploads (not part of the site)
+uploads/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# image-slot sidecar state (generated at runtime)
+.image-slots.state.json

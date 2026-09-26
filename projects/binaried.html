@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Binaried — Unified Workspace OS · Sneha Biradar</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@200;300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#13131a;
+    --muted:#5c5c68;
+    --faint:#9a9aa6;
+    --hair:rgba(19,19,26,.10);
+    --hair-soft:rgba(19,19,26,.06);
+    --purple:#7B61FF;
+    --purple-deep:#5a3fe0;
+    --emerald:#19c37d;
+    --rose:#f0506e;
+    --slate:#16161f;
+    --panel:#f6f5fb;
+    --font:"Onest",ui-sans-serif,system-ui,sans-serif;
+    --mono:"Geist Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--purple);color:#fff}
+  a{color:inherit}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 40px}
+  @media (max-width:720px){ .wrap{padding:0 22px} }
+
+  h1,h2,h3{margin:0;font-weight:300;letter-spacing:-.02em;line-height:1.06}
+  p{margin:0;color:var(--muted);line-height:1.65;font-weight:400}
+
+  .num{font-family:var(--mono);font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:18px}
+  .sub-mono{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--purple);width:0;z-index:60;transition:width .1s linear}
+  .topnav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 40px;background:rgba(255,255,255,.8);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--hair-soft)}
+  @media (max-width:720px){ .topnav{padding:13px 20px} }
+  .topnav .back{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;text-decoration:none;color:var(--ink)}
+  .topnav .back svg{width:16px;height:16px;transition:transform .18s}
+  .topnav .back:hover svg{transform:translateX(-3px)}
+  .topnav .nm{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+  /* Hero */
+  .hero{padding:160px 0 70px;text-align:center}
+  .hero .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--faint);margin-bottom:26px;display:block}
+  .hero h1{font-size:clamp(50px,8.5vw,108px);font-weight:200;letter-spacing:-.045em;margin-bottom:14px;line-height:.98}
+  .hero h1 .pp{font-weight:600;color:var(--purple)}
+  .hero .rule{height:1px;width:128px;background:var(--hair);margin:30px auto 36px}
+  .hero .subtitle{font-size:clamp(19px,2.5vw,30px);font-weight:300;letter-spacing:-.01em;color:#2a2a33;max-width:24ch;margin:0 auto;line-height:1.25}
+  .hero .subtitle em{font-style:normal;color:var(--purple)}
+  .hero .meta{display:flex;justify-content:center;flex-wrap:wrap;gap:14px 40px;margin-top:50px}
+  .hero .meta .m{display:flex;flex-direction:column;gap:5px}
+  .hero .meta .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .hero .meta .v{font-size:15px;font-weight:600;color:var(--ink)}
+
+  /* cover band */
+  .coverband{max-width:1180px;margin:18px auto 0;padding:0 40px}
+  @media (max-width:720px){ .coverband{padding:0 16px} }
+  .coverframe{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(135deg,#b9adff 0%,#8f78ff 100%);padding:40px 40px 0;box-shadow:0 40px 90px rgba(123,97,255,.22)}
+  @media (max-width:720px){ .coverframe{padding:22px 22px 0} }
+  .coverframe img{display:block;width:100%;max-width:840px;margin:0 auto;border-radius:16px 16px 0 0;box-shadow:0 -2px 0 rgba(255,255,255,.5),0 30px 60px rgba(40,20,90,.3)}
+  .coverframe .tagline{position:absolute;top:24px;left:32px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+
+  .sec{padding:0 0 40px}
+  .divide{border-top:1px solid var(--hair);margin-top:120px;padding-top:96px}
+  @media (max-width:720px){ .divide{margin-top:80px;padding-top:64px} }
+  .lead-h{font-size:clamp(30px,5vw,58px);font-weight:300;letter-spacing:-.03em;line-height:1.05;margin-bottom:36px;max-width:20ch}
+  .lead-h .pp{color:var(--purple);font-weight:400}
+  .body-xl{font-size:clamp(18px,2.1vw,22px);font-weight:300;line-height:1.62;color:#3e3e48}
+  .maxw{max-width:760px}
+
+  .slot{position:relative;background:var(--panel);border:1px solid var(--hair-soft);overflow:hidden}
+  .slot img{display:block;width:100%;height:auto}
+  /* wireframe band — full bleed, larger */
+  .wfband{margin-top:8px;border-radius:18px;padding:18px;background:#f2f2f4;border:1px solid var(--hair-soft)}
+  .wfband img{display:block;width:100%;height:auto;border-radius:8px}
+
+  /* Problem / Objective / Goal */
+  .pog{display:grid;grid-template-columns:repeat(3,1fr);gap:44px;margin-top:8px}
+  @media (max-width:820px){ .pog{grid-template-columns:1fr;gap:34px} }
+  .pog .blk{padding-top:22px;border-top:2px solid var(--purple)}
+  .pog .blk h3{font-size:14px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--purple);font-weight:500;margin-bottom:14px}
+  .pog .blk p{font-size:16px;line-height:1.6}
+
+  /* design system — type */
+  .ds-type{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:48px}
+  @media (max-width:820px){ .ds-type{grid-template-columns:1fr;gap:34px} }
+  .ds-type .pts{display:flex;flex-direction:column;gap:22px}
+  .ds-type .pt{display:flex;gap:16px}
+  .ds-type .pt .i{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(123,97,255,.12);color:var(--purple);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:500}
+  .ds-type .pt h4{margin:0 0 5px;font-size:16px;font-weight:600;color:var(--ink)}
+  .ds-type .pt p{font-size:14.5px;line-height:1.55}
+  .typecard{border-radius:22px;border:1px solid var(--hair);background:#fafaff;padding:34px;box-shadow:0 24px 60px rgba(40,30,90,.07)}
+  .typecard .rowtop{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .typecard .big{font-size:76px;font-weight:700;letter-spacing:-.04em;color:var(--ink);line-height:1}
+  .typecard .q{margin:22px 0 26px;font-size:16px;color:#3e3e48;font-style:italic}
+  .typecard .weights{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .typecard .w{border:1px solid var(--hair);border-radius:12px;padding:18px 0;text-align:center}
+  .typecard .w.on{border-color:var(--purple);background:rgba(123,97,255,.05)}
+  .typecard .w .aa{font-size:24px;color:var(--ink)}
+  .typecard .w .lb{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+
+  /* colors */
+  .ds-color{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:48px}
+  @media (max-width:820px){ .ds-color{grid-template-columns:1fr;gap:32px} }
+  .swatches{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sw{border-radius:18px;padding:22px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+  .sw .role{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.8;margin-bottom:8px}
+  .sw .hex{font-size:19px;font-weight:600;letter-spacing:-.01em}
+  .sw .nm{font-size:13px;opacity:.85;margin-top:2px}
+  .sw.primary{grid-column:span 2;background:var(--purple);min-height:150px}
+  .sw.success{background:var(--emerald)}
+  .sw.error{background:var(--rose)}
+  .sw.neutral{grid-column:span 2;background:var(--slate)}
+  .ds-color .info .pt{display:flex;gap:14px;margin-bottom:22px}
+  .ds-color .info .pt .i{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(123,97,255,.12);color:var(--purple);display:flex;align-items:center;justify-content:center}
+  .ds-color .info .pt .i svg{width:16px;height:16px}
+  .ds-color .info .pt h4{margin:0 0 6px;font-size:15px;font-weight:600;color:var(--ink)}
+  .ds-color .info .pt p{font-size:14px;line-height:1.55}
+  .ds-color .info .pt p b{color:var(--ink);font-weight:600}
+
+  /* laws grid */
+  .laws{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:48px}
+  @media (max-width:720px){ .laws{grid-template-columns:1fr} }
+  .law{border:1px solid var(--hair);border-radius:22px;padding:30px;background:#fafaff}
+  .law .badge{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--slate);border-radius:999px;padding:6px 12px;margin-bottom:18px}
+  .law h3{font-size:21px;font-weight:500;color:var(--ink);margin-bottom:10px;letter-spacing:-.01em}
+  .law .quote{font-size:13.5px;font-style:italic;color:var(--faint);margin-bottom:16px;line-height:1.5}
+  .law p{font-size:14.5px;line-height:1.6}
+  .law p b{color:var(--purple);font-weight:600}
+
+  /* alternating feature rows */
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:72px}
+  .frow:first-of-type{margin-top:48px}
+  @media (max-width:820px){ .frow{grid-template-columns:1fr;gap:28px} }
+  .frow h3{font-size:clamp(22px,2.6vw,30px);font-weight:400;letter-spacing:-.02em;margin-bottom:16px;color:var(--ink)}
+  .frow p{font-size:16px;line-height:1.66}
+  .frow .kk{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin-bottom:14px}
+  .frow .shot{border-radius:16px;border:1px solid var(--hair);box-shadow:0 24px 60px rgba(40,30,90,.12);overflow:hidden;background:#fff}
+  .frow .shot img{display:block;width:100%;height:auto}
+  .frow.flip .txt{order:2}
+  @media (max-width:820px){ .frow.flip .txt{order:0} }
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px 56px;margin-top:8px}
+  @media (max-width:720px){ .metrics{grid-template-columns:1fr;gap:28px} }
+  .metric{padding:26px 0;border-top:1px solid var(--hair)}
+  .metric h3{font-size:21px;font-weight:500;letter-spacing:-.01em;margin-bottom:10px;color:var(--ink)}
+  .metric .big{color:var(--purple);font-weight:600}
+  .metric p{font-size:15px;line-height:1.6}
+
+  .specbox{margin-top:80px;padding:44px;border:1px solid var(--hair);border-radius:24px;background:#fafaff}
+  .specbox .t{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);text-align:center;margin-bottom:34px}
+  .specs{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
+  @media (max-width:720px){ .specs{grid-template-columns:repeat(2,1fr);gap:24px} }
+  .specs .s .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:9px}
+  .specs .s .v{font-size:14px;font-weight:600;color:var(--ink)}
+  .specs .s .v.pp{color:var(--purple)}
+  .specs .s .vsub{font-size:11px;color:var(--faint);margin-top:3px}
+
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:96px;padding-top:40px;border-top:1px solid var(--hair)}
+  .tags .tag{padding:7px 14px;border:1px solid var(--hair);border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+  .outro{margin-top:120px;background:var(--purple);color:#fff;padding:96px 0;text-align:center}
+  .outro .q{font-size:clamp(28px,4.4vw,52px);font-weight:300;letter-spacing:-.03em;line-height:1.08;max-width:20ch;margin:0 auto 24px;color:#fff}
+  .outro p{color:rgba(255,255,255,.9);font-size:17px;max-width:52ch;margin:0 auto;line-height:1.6}
+  .outro .links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:40px}
+  .outro .links a{font-size:14px;font-weight:600;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:2px}
+  .outro .links a:hover{border-color:#fff}
+
+  @keyframes revealIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .reveal{opacity:1;transform:none}
+  .js .reveal.in{animation:revealIn .7s cubic-bezier(.2,.7,.2,1) both}
+  @media (prefers-reduced-motion:reduce){ .js .reveal.in{animation:none} }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+
+<div class="progress" id="progress"></div>
+
+<nav class="topnav">
+  <a class="back" href="../index.html?work=1">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+    Back to projects
+  </a>
+  <span class="nm">Sneha Biradar · Case Study 03</span>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow reveal">Project 03 · Case Study</span>
+    <h1 class="reveal">Binaried<br/><span class="pp">Workspace OS</span></h1>
+    <div class="rule reveal"></div>
+    <h2 class="subtitle reveal">One workspace for <em>everything</em> a business runs on — dashboards, sales, admin and config, on a single design system.</h2>
+    <div class="meta reveal">
+      <div class="m"><span class="k">Role</span><span class="v">Product &amp; UI Design</span></div>
+      <div class="m"><span class="k">Year</span><span class="v">2026</span></div>
+      <div class="m"><span class="k">Surface</span><span class="v">Web App · Desktop</span></div>
+      <div class="m"><span class="k">Tools</span><span class="v">Figma · Onest</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- Cover band -->
+<section class="coverband reveal">
+  <div class="coverframe">
+    <span class="tagline">Binaried · the unified workspace</span>
+    <img src="binaried-dash.png" alt="Binaried dashboard — recently accessed, application library and system health" />
+  </div>
+</section>
+
+<main class="wrap">
+
+  <!-- 01 Challenge -->
+  <section class="sec" style="margin-top:96px">
+    <span class="num reveal">01 · The Challenge</span>
+    <h2 class="lead-h reveal">Five tools, five logins, zero <span class="pp">cohesion</span>.</h2>
+    <div class="pog reveal">
+      <div class="blk">
+        <h3>The Problem</h3>
+        <p>Teams juggle a different app for every job — analytics here, admin there, settings somewhere else. Context-switching is constant, and nothing looks or behaves the same way twice.</p>
+      </div>
+      <div class="blk">
+        <h3>The Objective</h3>
+        <p>Bring the whole workspace under one roof: a single shell where dashboards, sales, admin, config and utilities live side by side with one consistent language.</p>
+      </div>
+      <div class="blk">
+        <h3>The Goal</h3>
+        <p>Reduce cognitive load and decision fatigue — so anyone can land, scan, and act in seconds, without relearning the interface each time they switch jobs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Wireframes -->
+  <section class="sec divide">
+    <span class="num reveal">02 · Structure First</span>
+    <h2 class="lead-h reveal">Low-fidelity, high-certainty.</h2>
+    <p class="body-xl maxw reveal" style="margin-bottom:8px">Before a single pixel of colour, I mapped the entire shell in greyscale — locking the persistent left rail, the global search header, and the tabbed sub-navigation so every screen would feel like the same product.</p>
+  </section>
+</main>
+
+<div class="coverband reveal" style="max-width:1340px;margin-top:40px">
+  <div class="wfband">
+    <img src="binaried-wireframes.png" alt="Binaried wireframes — dashboard, subscription management, system config, data tables and sales dashboard" />
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- 03 Type system -->
+  <section class="sec divide">
+    <span class="num reveal">03 · The Design System</span>
+    <h2 class="lead-h reveal">Why <span class="pp">Onest</span>?</h2>
+    <div class="ds-type">
+      <div class="pts reveal">
+        <p class="body-xl" style="margin-bottom:8px">A dashboard lives or dies by legibility. Onest is a modern geometric sans-serif that balances clarity with personality.</p>
+        <div class="pt"><div class="i">1</div><div><h4>High x-height</h4><p>Improves readability at small sizes — crucial for dense dashboard data tables.</p></div></div>
+        <div class="pt"><div class="i">2</div><div><h4>Open apertures</h4><p>Keeps letters distinct, preventing ambiguity between similar shapes like ‘c’ and ‘o’.</p></div></div>
+        <div class="pt"><div class="i">3</div><div><h4>Geometric construction</h4><p>Aligns with the grid-based layout of the UI, creating a sense of order and precision.</p></div></div>
+      </div>
+      <div class="typecard reveal">
+        <div class="rowtop"><span>Display</span><span>72px / Bold</span></div>
+        <div class="big">Onest</div>
+        <div class="q">“Good design is obvious. Great design is transparent.”</div>
+        <div class="weights">
+          <div class="w"><div class="aa" style="font-weight:300">Aa</div><div class="lb">Light</div></div>
+          <div class="w on"><div class="aa" style="font-weight:400">Aa</div><div class="lb">Regular</div></div>
+          <div class="w"><div class="aa" style="font-weight:700">Aa</div><div class="lb">Bold</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Colour -->
+  <section class="sec divide">
+    <span class="num reveal">04 · Colour Theory</span>
+    <h2 class="lead-h reveal">Psychology of <span class="pp">Colour</span>.</h2>
+    <div class="ds-color">
+      <div class="swatches reveal">
+        <div class="sw primary"><span class="role">Primary</span><span class="hex">#7B61FF</span><span class="nm">Royal Purple</span></div>
+        <div class="sw success"><span class="role">Success</span><span class="hex">Emerald</span></div>
+        <div class="sw error"><span class="role">Error</span><span class="hex">Rose</span></div>
+        <div class="sw neutral"><span class="role">Neutral</span><span class="hex">Slate 900</span></div>
+      </div>
+      <div class="info reveal">
+        <p class="body-xl" style="margin-bottom:24px">Colour isn’t decoration — it’s communication. A tight palette guides behaviour and evokes trust.</p>
+        <div class="pt"><div class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 4 1-4 4 1 6-4-3-4 3 1-6-4-4 4-1z"/></svg></div><div><h4>Why purple?</h4><p>Purple bridges the stability of blue and the energy of red. It signifies creativity, wisdom and “future-tech” — without the aggression of pure red or the coldness of pure blue.</p></div></div>
+        <div class="pt"><div class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></div><div><h4>The 60-30-10 rule</h4><p><b>60% neutral</b> backgrounds &amp; whitespace · <b>30% secondary</b> cards, borders &amp; text · <b>10% accent</b> CTAs and key data points (#7B61FF).</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 The Laws -->
+  <section class="sec divide">
+    <span class="num reveal">05 · The Laws We Follow</span>
+    <h2 class="lead-h reveal">Designed to <span class="pp">reduce cognitive load</span>.</h2>
+    <p class="body-xl maxw reveal">Beyond aesthetics, the interface strictly follows psychological principles — applied to specific components, not just stated as theory.</p>
+    <div class="laws">
+      <div class="law reveal"><span class="badge">Hick’s Law</span><h3>Simplifying navigation</h3><div class="quote">“The time it takes to make a decision increases with the number and complexity of choices.”</div><p>The sidebar groups items into <b>Main vs Admin</b> to reduce scanning load, and can collapse entirely to remove distractions while focusing on content.</p></div>
+      <div class="law reveal"><span class="badge">Miller’s Law</span><h3>Chunking information</h3><div class="quote">“The average person can only keep 7 (±2) items in their working memory.”</div><p>Key metrics are displayed in <b>groups of four</b>, well within the cognitive limit — letting users assess system health at a single glance, without scrolling.</p></div>
+      <div class="law reveal"><span class="badge">Jakob’s Law</span><h3>Mental models</h3><div class="quote">“Users spend most of their time on other sites. They prefer yours to work the same way.”</div><p>Search sits <b>top-left/center</b> where users instinctively look; profile &amp; settings stay <b>top-right</b>. Breaking these conventions causes friction, so I didn’t.</p></div>
+      <div class="law reveal"><span class="badge">Tufte · Data-Ink</span><h3>Let the data speak</h3><div class="quote">“Remove all non-essential ink.”</div><p>Charts strip heavy grid lines and borders. <b>Gradient fills</b> add volume without clutter, and tooltips appear only on hover — progressive disclosure keeps the canvas calm.</p></div>
+    </div>
+  </section>
+
+  <!-- 06 Surfaces -->
+  <section class="sec divide">
+    <span class="num reveal">06 · The Surfaces</span>
+    <h2 class="lead-h reveal">One shell, many jobs.</h2>
+
+    <div class="frow reveal">
+      <div class="txt">
+        <div class="kk">Sales Overview</div>
+        <h3>Numbers that answer “are we growing?”</h3>
+        <p>A five-metric header (revenue, orders, customers, growth, AOV) sits above trend, product, region and order-status charts — the whole sales story on one scannable canvas.</p>
+      </div>
+      <div class="shot"><img src="binaried-sales.png" alt="Binaried sales dashboard" /></div>
+    </div>
+
+    <div class="frow flip reveal">
+      <div class="txt">
+        <div class="kk">Admin · Subscription Plans</div>
+        <h3>Dense tables, kept calm.</h3>
+        <p>Plan data lives in a clean table with right-aligned actions and a primary “Add New Plan” CTA — the Data-Ink principle applied so the rows read fast and edit-actions never compete with content.</p>
+      </div>
+      <div class="shot"><img src="binaried-admin.png" alt="Binaried admin — subscription plans table" /></div>
+    </div>
+
+    <div class="frow reveal">
+      <div class="txt">
+        <div class="kk">Admin · System Config</div>
+        <h3>Toggles, grouped by intent.</h3>
+        <p>Messaging APIs, email settings and app config are chunked into labelled cards with consistent toggle affordances — and a single, unmissable “Save Changes” primary action.</p>
+      </div>
+      <div class="shot"><img src="binaried-config.png" alt="Binaried system configuration" /></div>
+    </div>
+
+    <div class="frow flip reveal">
+      <div class="txt">
+        <div class="kk">Admin · User Management</div>
+        <h3>Scan, don’t read.</h3>
+        <p>Avatars and role badges act as visual anchors for rapid row-scanning (Law of Proximity); name + email sit close together while destructive actions are separated by whitespace.</p>
+      </div>
+      <div class="shot"><img src="binaried-users.png" alt="Binaried user management table" /></div>
+    </div>
+  </section>
+
+  <!-- 07 Impact -->
+  <section class="sec divide">
+    <span class="num reveal">07 · The Outcome</span>
+    <h2 class="lead-h reveal">A system, not a screen.</h2>
+    <p class="body-xl maxw reveal" style="margin-bottom:56px">Binaried isn’t a single dashboard — it’s a repeatable language. Because every surface inherits the same shell, type and colour logic, new modules ship faster and feel native on day one.</p>
+
+    <div class="metrics reveal">
+      <div class="metric"><h3><span class="big">1</span> design system</h3><p>A single source of truth — Onest type, the purple 60-30-10 palette and shared components drive every screen.</p></div>
+      <div class="metric"><h3><span class="big">5+</span> unified surfaces</h3><p>Dashboard, Sales, Admin (Plans / Config / Users) and Utilities all live in one consistent shell.</p></div>
+      <div class="metric"><h3><span class="big">4-item</span> metric chunks</h3><p>Key stats grouped within Miller’s cognitive limit, so status reads at a glance — no scrolling required.</p></div>
+      <div class="metric"><h3><span class="big">0</span> relearning cost</h3><p>Jakob’s-Law conventions mean a user who knows one surface already knows them all.</p></div>
+    </div>
+
+    <div class="specbox reveal">
+      <div class="t">System Specifications</div>
+      <div class="specs">
+        <div class="s"><span class="k">Typeface</span><span class="v">Onest</span><div class="vsub">Geometric sans</div></div>
+        <div class="s"><span class="k">Primary</span><span class="v pp">#7B61FF</span><div class="vsub">Royal Purple</div></div>
+        <div class="s"><span class="k">Ratio</span><span class="v">60 · 30 · 10</span><div class="vsub">Neutral / 2nd / accent</div></div>
+        <div class="s"><span class="k">Nav</span><span class="v">Main + Admin</span><div class="vsub">Hick’s grouping</div></div>
+        <div class="s"><span class="k">Charts</span><span class="v">Data-Ink</span><div class="vsub">Tufte minimal</div></div>
+      </div>
+    </div>
+
+    <div class="tags reveal">
+      <span class="tag">Product Design</span>
+      <span class="tag">Design System</span>
+      <span class="tag">Dashboard UX</span>
+      <span class="tag">Data Viz</span>
+      <span class="tag">Cognitive Load</span>
+      <span class="tag">Figma</span>
+    </div>
+  </section>
+</main>
+
+<!-- Outro -->
+<section class="outro reveal">
+  <div class="wrap">
+    <h2 class="q">Consistency is a feature.</h2>
+    <p>If Binaried sparked an idea — or a question about building systems that scale — I’d love to talk.</p>
+    <div class="links">
+      <a href="mailto:work.snehabiradar@gmail.com">Email</a>
+      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="#" target="_blank" rel="noopener">Behance</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  const reveals = Array.from(document.querySelectorAll('.reveal'));
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((e)=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold:0, rootMargin:'0px 0px -6% 0px' });
+    reveals.forEach((el)=>io.observe(el));
+  }
+</script>
+</body>
+</html>

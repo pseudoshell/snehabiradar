@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clarify — The XAI Diabetes App · Sneha Biradar</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@200;300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-2:#0f0f11;
+    --ink:#ffffff;
+    --w70:rgba(255,255,255,.70);
+    --w50:rgba(255,255,255,.50);
+    --w40:rgba(255,255,255,.40);
+    --w30:rgba(255,255,255,.30);
+    --line:rgba(255,255,255,.10);
+    --line-soft:rgba(255,255,255,.05);
+    --panel:rgba(255,255,255,.02);
+    --red:#c72844;
+    --red-soft:rgba(199,40,68,.5);
+    --emerald:#34c98a;
+    --font:"Onest",ui-sans-serif,system-ui,sans-serif;
+    --mono:"Geist Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--red);color:#fff}
+  a{color:inherit}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 40px}
+  @media (max-width:720px){ .wrap{padding:0 22px} }
+
+  h1,h2,h3,h4{margin:0;font-weight:300;letter-spacing:-.02em;line-height:1.08}
+  p{margin:0;color:var(--w50);line-height:1.65;font-weight:300}
+  .mono{font-family:var(--mono)}
+  .num{font-family:var(--mono);font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--w30);display:block;margin-bottom:18px}
+
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--red);width:0;z-index:60;transition:width .1s linear}
+  .topnav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 40px;background:rgba(10,10,11,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
+  @media (max-width:720px){ .topnav{padding:13px 20px} }
+  .topnav .back{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;text-decoration:none;color:var(--ink)}
+  .topnav .back svg{width:16px;height:16px;transition:transform .18s}
+  .topnav .back:hover svg{transform:translateX(-3px)}
+  .topnav .nm{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--w30)}
+
+  /* Hero */
+  .hero{padding:160px 0 60px;text-align:center}
+  .hero .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--w40);margin-bottom:24px;display:block}
+  .hero h1{font-size:clamp(46px,8vw,104px);font-weight:200;letter-spacing:-.04em;margin-bottom:26px}
+  .hero .rule{height:1px;width:128px;background:var(--line);margin:0 auto 36px}
+  .hero .subtitle{font-size:clamp(19px,2.5vw,30px);font-weight:300;color:rgba(255,255,255,.9);max-width:22ch;margin:0 auto;line-height:1.25}
+  .hero .subtitle em{font-style:normal;color:var(--red)}
+  .hero .meta{display:flex;justify-content:center;flex-wrap:wrap;gap:14px 40px;margin-top:48px}
+  .hero .meta .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--w30);display:block;margin-bottom:5px}
+  .hero .meta .v{font-size:15px;font-weight:600;color:var(--ink)}
+
+  /* hero band image */
+  .heroband{margin:8px auto 0;max-width:1120px;padding:0 40px}
+  @media (max-width:720px){ .heroband{padding:0 16px} }
+  .heroband .frame{position:relative;aspect-ratio:21/9;border-radius:32px;overflow:hidden;background:var(--panel);border:1px solid var(--line);box-shadow:0 40px 90px rgba(0,0,0,.5)}
+  .heroband .frame image-slot{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .heroband .tagline{position:absolute;bottom:26px;left:30px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--w40);z-index:2}
+  .heroband .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6),transparent 55%);pointer-events:none}
+
+  /* image slot helper */
+  .slot{position:relative;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  .slot image-slot{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;pointer-events:none;color:var(--w30);text-align:center;padding:20px}
+  .ph svg{width:30px;height:30px;opacity:.6}
+  .ph span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;line-height:1.5}
+
+  /* section shell */
+  .sec{margin-top:128px;padding-top:96px;border-top:1px solid var(--line)}
+  @media (max-width:720px){ .sec{margin-top:84px;padding-top:64px} }
+  .lead-h{font-size:clamp(28px,4.6vw,52px);font-weight:200;letter-spacing:-.03em;line-height:1.1;margin-bottom:34px;max-width:20ch}
+  .body-xl{font-size:clamp(18px,2.1vw,23px);font-weight:300;line-height:1.6;color:var(--w70)}
+  .maxw{max-width:780px}
+
+  /* overview grid */
+  .ov{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:start;margin-top:8px}
+  @media (max-width:880px){ .ov{grid-template-columns:1fr;gap:40px} }
+  .ps{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:32px;padding-top:28px;border-top:1px solid var(--line-soft)}
+  @media (max-width:560px){ .ps{grid-template-columns:1fr;gap:22px} }
+  .ps h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
+  .ps .p-prob h4{color:var(--red)}
+  .ps .p-sol h4{color:var(--emerald)}
+  .ps p{font-size:14.5px;line-height:1.6}
+  /* specificity box */
+  .spec{position:relative;margin-top:40px;padding:36px 38px;border-radius:22px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  .spec .bar{position:absolute;top:0;left:0;width:4px;height:100%;background:var(--red-soft)}
+  .spec .t{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--w40);margin-bottom:28px}
+  .spec .row{margin-bottom:26px}
+  .spec .row:last-child{margin-bottom:0}
+  .spec .row .l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--w30);margin-bottom:8px}
+  .spec .row .v{font-size:19px;font-weight:300;color:#fff;line-height:1.3}
+  /* phone */
+  .ovphone{position:relative;display:flex;justify-content:center}
+  .ovphone .glow{position:absolute;width:120%;height:120%;background:rgba(199,40,68,.06);filter:blur(90px);border-radius:50%;z-index:0}
+  .ovphone .screen{position:relative;z-index:1;width:340px;max-width:80vw;aspect-ratio:9/16;border-radius:40px;background:#141416;padding:9px;border:1px solid var(--line);box-shadow:0 40px 80px rgba(0,0,0,.5)}
+  .ovphone .inner{position:relative;width:100%;height:100%;border-radius:31px;overflow:hidden;background:var(--bg-2)}
+  .ovphone .inner image-slot{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .ovphone .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:110px;height:24px;background:#000;border-radius:999px;z-index:3}
+
+  /* visual identity */
+  .vi{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:48px;align-items:start}
+  @media (max-width:880px){ .vi{grid-template-columns:1fr;gap:36px} }
+  .vi .swatches{display:flex;gap:14px}
+  .vi .sw{flex:1}
+  .vi .sw .chip{height:64px;border-radius:16px;border:1px solid var(--line);margin-bottom:8px}
+  .vi .sw .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--w40);text-align:center}
+  .vi .type{border-left:1px solid var(--line-soft);padding-left:36px}
+  @media (max-width:880px){ .vi .type{border-left:0;padding-left:0} }
+  .vi .type .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--w30);margin-bottom:8px}
+  .vi .type .face{font-size:42px;font-weight:300;letter-spacing:-.02em;margin-bottom:10px}
+  .vi .type .weights{display:flex;gap:16px;font-family:var(--mono);font-size:12px;color:var(--w40)}
+
+  /* UX laws box */
+  .uxbox{position:relative;margin-top:64px;padding:40px;border-radius:28px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  .uxbox .ghost{position:absolute;top:14px;right:30px;font-family:var(--mono);font-weight:700;font-size:96px;color:rgba(255,255,255,.04);pointer-events:none}
+  .uxbox .t{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--w40);margin-bottom:30px}
+  .uxbox .laws{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+  @media (max-width:720px){ .uxbox .laws{grid-template-columns:1fr;gap:24px} }
+  .uxbox h4{font-size:16px;font-weight:600;color:#fff;margin-bottom:10px}
+  .uxbox p{font-size:13.5px;line-height:1.6}
+
+  /* metrics */
+  .impact3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:8px}
+  @media (max-width:880px){ .impact3{grid-template-columns:1fr} }
+  .imc{padding:32px;border-radius:20px;background:var(--panel);border:1px solid var(--line-soft);transition:background .3s,border-color .3s}
+  .imc:hover{background:rgba(255,255,255,.035);border-color:var(--line)}
+  .imc .v{font-size:clamp(40px,5vw,54px);font-weight:200;letter-spacing:-.03em;margin-bottom:14px}
+  .imc .l{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--w30);margin-bottom:18px}
+  .imc p{font-size:14px;line-height:1.6}
+
+  /* mistakes */
+  .mistakes{display:flex;flex-direction:column;gap:24px;margin-top:8px}
+  .mrow{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media (max-width:720px){ .mrow{grid-template-columns:1fr} }
+  .mcard{padding:30px;border-radius:22px}
+  .mcard h4{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+  .mcard p{font-size:14.5px;line-height:1.6;color:var(--w70)}
+  .mcard.bad{background:rgba(199,40,68,.06);border:1px solid rgba(199,40,68,.16)}
+  .mcard.bad h4{color:#ff6b82}
+  .mcard.good{background:rgba(52,201,138,.06);border:1px solid rgba(52,201,138,.16)}
+  .mcard.good h4{color:var(--emerald)}
+
+  /* bento — feature cards (text + full screenshot, no overlap) */
+  .bento{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  @media (max-width:760px){ .bento{grid-template-columns:1fr} }
+  .fcard{position:relative;display:grid;grid-template-columns:1fr 0.86fr;gap:22px;align-items:center;
+    border-radius:26px;background:var(--panel);border:1px solid var(--line);padding:32px;overflow:hidden;
+    min-height:316px;transition:background .3s,border-color .3s}
+  .fcard:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.14)}
+  .fcard .txt{position:relative;z-index:2}
+  .fcard .kk{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#ff7d92;margin-bottom:14px}
+  .fcard h3{font-weight:300;color:#fff;font-size:23px;line-height:1.18;margin-bottom:12px;letter-spacing:-.01em}
+  .fcard p{font-size:14px;line-height:1.6;color:var(--w70)}
+  .fcard .media{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;height:100%}
+  .fcard .media img{max-width:100%;max-height:252px;width:auto;height:auto;border-radius:18px;display:block;
+    box-shadow:0 18px 50px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.07)}
+  .fcard .glow{position:absolute;right:-50px;bottom:-50px;width:220px;height:220px;background:rgba(199,40,68,.07);filter:blur(72px);border-radius:50%;z-index:0}
+  @media (max-width:760px){
+    .fcard{grid-template-columns:1fr;min-height:0;gap:24px}
+    .fcard .media img{max-height:340px;margin:0 auto}
+  }
+
+  /* engineering logic — thermometer ruler */
+  .ruler{position:relative;min-height:540px;margin-top:48px}
+  .ruler .baseline{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(255,255,255,.12);transform:translateY(-50%)}
+  .ruler .ticks{position:absolute;left:0;right:0;display:flex;justify-content:space-between;pointer-events:none}
+  .ruler .ticks.top{top:calc(50% - 26px);height:22px;align-items:flex-end}
+  .ruler .ticks.bot{top:calc(50% + 4px);height:22px;align-items:flex-start}
+  .ruler .ticks i{width:1px;height:33%;background:rgba(255,255,255,.12)}
+  .ruler .ticks i.med{height:62%;background:rgba(255,255,255,.20)}
+  .ruler .ticks i.maj{height:100%;background:rgba(255,255,255,.32)}
+  .ruler .fill{position:absolute;top:50%;left:0;height:3px;width:0;background:var(--red);box-shadow:0 0 18px rgba(199,40,68,.75);transform:translateY(-50%);transition:width 1.7s cubic-bezier(.25,.7,.25,1)}
+  .ruler.in .fill{width:100%}
+  .ruler .knob{position:absolute;top:50%;left:2%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:var(--red);box-shadow:0 0 0 13px rgba(199,40,68,.10),0 0 40px rgba(199,40,68,.55)}
+  .ruler .slider{position:absolute;top:50%;left:2%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#0b0b0d;border:2px solid #34d0d0;box-shadow:0 0 14px rgba(52,208,208,.5);transition:left 1.7s cubic-bezier(.25,.7,.25,1)}
+  .ruler.in .slider{left:64%}
+  .rp{position:absolute;width:235px}
+  .rp .id{width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;margin-bottom:16px;box-shadow:0 0 24px rgba(199,40,68,.45)}
+  .rp h4{font-size:18px;font-weight:500;color:#fff;margin-bottom:10px}
+  .rp .desc{font-size:13.5px;line-height:1.55;color:var(--w40);margin-bottom:14px}
+  .rp .sol{font-size:11px;line-height:1.55;color:#ff7d92;letter-spacing:.04em;text-transform:uppercase}
+  .rp .conn{position:absolute;left:19px;width:1.5px;background:linear-gradient(var(--red),rgba(199,40,68,.15))}
+  .rp.top{top:0}
+  .rp.top .conn{top:155px;height:115px}
+  .rp.bot{bottom:0}
+  .rp.bot .conn{bottom:160px;height:115px;background:linear-gradient(rgba(199,40,68,.15),var(--red))}
+  .rp.p1{left:11%}.rp.p3{left:56%}.rp.p2{left:40%}.rp.p4{left:78%}
+  @media (max-width:880px){
+    .ruler{min-height:0}
+    .ruler .baseline,.ruler .ticks,.ruler .fill,.ruler .knob,.ruler .slider{display:none}
+    .rp{position:static!important;width:auto;margin-bottom:34px}
+    .rp .conn{display:none}
+  }
+
+  /* site map tree */
+  .sitemap{margin-top:36px;overflow-x:auto;background:#fbfbfc;border:1px solid rgba(13,13,15,.08);border-radius:24px;padding:34px 26px;-webkit-overflow-scrolling:touch}
+  .sm-hub{display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:34px}
+  .sm-bar{display:flex;align-items:center;gap:4px;background:#fff;border-radius:999px;padding:8px 10px;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+  .sm-bar .ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#15161a}
+  .sm-bar .ic.add{background:#15161a;color:#fff}
+  .sm-bar .ic svg{width:17px;height:17px}
+  .sm-menu{width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#15161a;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+  .sm-menu svg{width:18px;height:18px}
+  .smcols{display:grid;grid-template-columns:repeat(6,minmax(148px,1fr));gap:16px;min-width:960px}
+  .sm-links{display:block;width:100%;min-width:960px;height:72px;margin:2px 0;overflow:visible}
+  .sm-links path{fill:none;stroke:rgba(232,90,110,.55);stroke-width:1.4;vector-effect:non-scaling-stroke}
+  /* overview: show the screenshot as-is, no extra device frame */
+  .ovphone .screen{background:transparent!important;padding:0!important;box-shadow:none!important;border:0!important;width:380px!important;aspect-ratio:687/1362!important}
+  .ovphone .notch{display:none!important}
+  .ovphone .inner{background:transparent!important}
+  .smcol{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px}
+  .smcol::before{content:"";position:absolute;top:42px;bottom:16px;width:1px;background:#e4e4ea}
+  .smnode{position:relative;z-index:1;background:#fff;border:1px solid #e4e4ea;border-radius:999px;padding:8px 15px;font-size:12px;color:#52525a;text-align:center;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 2px rgba(13,13,15,.04)}
+  .smnode.head{background:#fff;color:#141519;font-weight:600;font-size:13px;padding:10px 18px;box-shadow:0 6px 16px rgba(13,13,15,.10)}
+  .smnode.sub{background:#fff;color:#141519;font-weight:600}
+  .smnode.act{background:#fde7ec;border-color:#f0b3c1;color:#c62843;font-weight:500}
+  .sm-hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--w30);text-align:center;margin-top:14px}
+
+  /* deep dive */
+  .dd{display:grid;grid-template-columns:1.4fr 1fr;gap:56px;align-items:start;margin-top:8px}
+  .dd.dd-solo{grid-template-columns:1fr}
+  .dd.dd-solo .info{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+  .dd.dd-solo .info .item{margin-bottom:0}
+  @media (max-width:880px){ .dd{grid-template-columns:1fr;gap:36px} .dd.dd-solo .info{grid-template-columns:1fr;gap:32px} }
+
+  /* deep-dive annotated phone (Spike + Streak callouts) */
+  .dd-stage{position:relative;max-width:900px;margin:0 auto;min-height:600px;display:flex;justify-content:center}
+  .dd-stage .phone-img{width:288px;max-width:64%;height:auto;border-radius:30px;display:block;
+    box-shadow:0 34px 90px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08);align-self:center}
+  .callout{position:absolute;display:flex;align-items:center;width:270px}
+  .callout .dot{flex:none;width:11px;height:11px;border-radius:50%;background:var(--red);box-shadow:0 0 16px rgba(199,40,68,.8);animation:pulse 1.8s ease-in-out infinite}
+  .callout .arm{flex:none;width:46px;height:2px;background:linear-gradient(90deg,var(--red),rgba(199,40,68,.25))}
+  .callout .ctxt{flex:1;background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:16px;padding:15px 17px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .callout .ctxt .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#ff7d92;display:block;margin-bottom:7px}
+  .callout .ctxt p{font-size:12.5px;line-height:1.5;color:var(--w70);margin:0}
+  .callout.spike{top:14%;right:8px}
+  .callout.streak{bottom:9%;right:8px}
+  .callout.insight{top:49%;left:8px}
+  .callout.insight .arm{background:linear-gradient(90deg,rgba(199,40,68,.25),var(--red))}
+  /* final screens board */
+  .finalshot{margin-top:8px;border-radius:24px;overflow:hidden;background:#fff;padding:12px;border:1px solid var(--line)}
+  .finalshot img{width:100%;height:auto;display:block;border-radius:14px}
+  @media (max-width:760px){
+    .dd-stage{flex-direction:column;align-items:center;gap:18px;min-height:0}
+    .dd-stage .phone-img{width:min(300px,82vw);max-width:none}
+    .callout{position:static;width:min(360px,90vw)}
+    .callout .dot,.callout .arm{display:none}
+    .callout .ctxt{border-left:3px solid var(--red)}
+  }
+  .dd .screens{display:flex;flex-direction:column;gap:22px}
+  .dd .big-frame{aspect-ratio:16/10;border-radius:24px}
+  .dd .pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .dd .pair .frame{aspect-ratio:4/5;border-radius:20px}
+  .dd .info .item{margin-bottom:36px}
+  .dd .info .h{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .dd .info .h .n{width:30px;height:30px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--w40)}
+  .dd .info .h h3{font-size:19px;font-weight:300;color:#fff}
+  .dd .info p{font-size:14.5px;line-height:1.65;color:var(--w50)}
+
+  /* final gallery */
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px}
+  @media (max-width:720px){ .gallery{grid-template-columns:1fr;gap:18px} }
+  .gallery .frame{aspect-ratio:9/16;border-radius:30px}
+  .gallery .frame.mid{transform:translateY(36px)}
+  @media (max-width:720px){ .gallery .frame.mid{transform:none} }
+
+  /* conclusion */
+  .concl{text-align:center}
+  .concl .lead-h{margin:0 auto 44px;max-width:18ch}
+  .concl .cols{display:grid;grid-template-columns:1fr 1fr;gap:48px;text-align:left;max-width:860px;margin:0 auto}
+  @media (max-width:720px){ .concl .cols{grid-template-columns:1fr;gap:30px} }
+  .concl .cols h3{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--w40);margin-bottom:14px}
+  .concl .cols p{font-size:16px;line-height:1.65;color:var(--w70)}
+
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:64px;padding-top:40px;border-top:1px solid var(--line)}
+  .tags .tag{padding:7px 14px;border:1px solid var(--line);border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--w50)}
+
+  .outro{margin-top:120px;background:var(--red);color:#fff;padding:96px 0;text-align:center}
+  .outro .q{font-size:clamp(28px,4.4vw,52px);font-weight:300;letter-spacing:-.03em;line-height:1.1;max-width:18ch;margin:0 auto 24px;color:#fff}
+  .outro p{color:rgba(255,255,255,.9);font-size:17px;max-width:52ch;margin:0 auto;line-height:1.6}
+  .outro .links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:40px}
+  .outro .links a{font-size:14px;font-weight:600;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:2px}
+  .outro .links a:hover{border-color:#fff}
+
+  .heroband .frame .shot-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .ovphone .inner .shot-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .shot-contain{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;padding:10px}
+  @keyframes revealIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .reveal{opacity:1;transform:none}
+  .js .reveal.in{animation:revealIn .7s cubic-bezier(.2,.7,.2,1) both}
+  @media (prefers-reduced-motion:reduce){ .js .reveal.in{animation:none} }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+
+<div class="progress" id="progress"></div>
+
+<nav class="topnav">
+  <a class="back" href="../index.html?work=1">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+    Back to projects
+  </a>
+  <span class="nm">Sneha Biradar · Case Study 02</span>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow reveal">Project Case Study</span>
+    <h1 class="reveal">Clarify</h1>
+    <div class="rule reveal"></div>
+    <h2 class="subtitle reveal">The XAI app that turns <em>numerical fatigue</em> into proactive understanding.</h2>
+    <div class="meta reveal">
+      <div class="m"><span class="k">Role</span><span class="v">Product Designer</span></div>
+      <div class="m"><span class="k">Domain</span><span class="v">mHealth · Chronic Care</span></div>
+      <div class="m"><span class="k">Platform</span><span class="v">iOS / Android</span></div>
+      <div class="m"><span class="k">Tools</span><span class="v">Figma</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="heroband reveal">
+  <div class="frame slot">
+    <img class="shot-cover" src="clarify-photo.png" alt="Clarify app — Daily Activity glucose dashboard" />
+    <div class="tagline">Clarify · the future of diabetes care</div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- 01 Overview -->
+  <section class="sec" style="border-top:0;margin-top:96px;padding-top:0">
+    <span class="num reveal">01 · Overview</span>
+    <h2 class="lead-h reveal">High-precision diabetes management.</h2>
+    <div class="ov">
+      <div class="reveal">
+        <p class="body-xl">Clarify is a mobile app for comprehensive diabetes management — combining intuitive tracking, smart reminders and educational content. I engineered it to solve the <strong style="color:#fff;font-weight:500">“Data-Hole”</strong> in chronic disease management, transitioning the user journey from reactive tracking to proactive understanding.</p>
+        <div class="ps">
+          <div class="p-prob">
+            <h4>The Problem</h4>
+            <p>Patients face “Numerical Fatigue” — a state where raw data points lead to anxiety rather than action, causing inconsistent tracking and poor clinical outcomes.</p>
+          </div>
+          <div class="p-sol">
+            <h4>The Solution</h4>
+            <p>A context-aware visual grammar that translates complex glucose velocity into actionable metabolic trajectories — giving users “The Why” behind every spike.</p>
+          </div>
+        </div>
+        <div class="spec">
+          <div class="bar"></div>
+          <div class="t">The Specificity Hack</div>
+          <div class="row">
+            <div class="l">The Industry</div>
+            <div class="v">High-precision mHealth and chronic disease management.</div>
+          </div>
+          <div class="row">
+            <div class="l">The Specialization</div>
+            <div class="v">Solving “Numerical Fatigue” through context-aware visual grammar and predictive trend analysis.</div>
+          </div>
+        </div>
+      </div>
+      <div class="ovphone reveal">
+        <div class="glow"></div>
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="inner slot">
+            <img class="shot-cover" src="clarify-home.png" alt="Clarify home — 3D glucose droplet and Spike Detected insight" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Visual Identity -->
+  <section class="sec">
+    <div class="vi">
+      <div class="reveal">
+        <span class="num">02 · Visual Identity</span>
+        <h2 class="lead-h" style="font-size:clamp(26px,3vw,34px);margin-bottom:18px">Typography &amp; Colors</h2>
+        <p style="font-size:14.5px">A clinical yet approachable aesthetic designed for high-stress readability.</p>
+      </div>
+      <div class="swatches reveal">
+        <div class="sw"><div class="chip" style="background:#c62843"></div><div class="lbl">Red</div></div>
+        <div class="sw"><div class="chip" style="background:#1c1d1c"></div><div class="lbl">Dark</div></div>
+        <div class="sw"><div class="chip" style="background:#f0f1f0"></div><div class="lbl">White</div></div>
+        <div class="sw"><div class="chip" style="background:#414651"></div><div class="lbl">Gray</div></div>
+      </div>
+      <div class="type reveal">
+        <div class="k">Primary Typeface</div>
+        <div class="face">Inter</div>
+        <div class="weights"><span>Light</span><span>Regular</span><span>Medium</span><span>Bold</span></div>
+      </div>
+    </div>
+
+    <div class="uxbox reveal">
+      <div class="ghost">UX</div>
+      <div class="t">The Cognitive Framework · UX Laws</div>
+      <div class="laws">
+        <div>
+          <h4>Fitts’s Law</h4>
+          <p>Oversized 72px touch targets for critical “Add Insight” actions, ensuring accuracy during hypoglycaemic episodes.</p>
+        </div>
+        <div>
+          <h4>Hick’s Law</h4>
+          <p>Reduced decision complexity by categorizing 12+ data types into 3 primary “Bento” clusters.</p>
+        </div>
+        <div>
+          <h4>Jakob’s Law</h4>
+          <p>Leveraged familiar medical-dashboard patterns to minimise the learning curve for elderly patients.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Measured Impact -->
+  <section class="sec">
+    <span class="num reveal">Measured Impact</span>
+    <h2 class="lead-h reveal">Engineering for clinical success.</h2>
+    <p class="body-xl maxw reveal" style="margin-bottom:48px">A design is only as strong as the problem it solves. Applying a systems-engineering approach, I focused on three core metrics: speed of comprehension, reduction of manual effort, and clinical portability.</p>
+    <div class="impact3 reveal">
+      <div class="imc"><div class="v">0.8s</div><div class="l">Glanceability Rate</div><p>Average time for a user to identify a critical glucose state using the Triple-Metric 3D droplet.</p></div>
+      <div class="imc"><div class="v">60%</div><div class="l">Friction Reduction</div><p>Consolidated 8+ fragmented data streams into a single, high-accessibility “Hybrid Sync” portal.</p></div>
+      <div class="imc"><div class="v">1-Page</div><div class="l">Clinical Portability</div><p>A modular PDF export engine that generates a structured summary for 15-minute consultations.</p></div>
+    </div>
+  </section>
+
+  <!-- Iteration & Mistakes -->
+  <section class="sec">
+    <span class="num reveal">Iteration &amp; Refinement</span>
+    <h2 class="lead-h reveal">Mistakes &amp; corrections.</h2>
+    <div class="mistakes reveal">
+      <div class="mrow">
+        <div class="mcard bad"><h4>The Mistake</h4><p>I first used a standard line chart for glucose trends. Users struggled to distinguish “velocity” (how fast it’s rising) from “value” (the current number).</p></div>
+        <div class="mcard good"><h4>The Correction</h4><p>I engineered the Dual-Axis Velocity Graph. A secondary vector layer lets users see the <em>rate of change</em> at a glance, preventing over-correction of insulin.</p></div>
+      </div>
+      <div class="mrow">
+        <div class="mcard bad"><h4>The Mistake</h4><p>The “Add Log” flow was a 4-step modal. Data showed a 40% drop-off rate during the second step.</p></div>
+        <div class="mcard good"><h4>The Correction</h4><p>Collapsed it into a single “Hybrid Portal” with smart defaults. Drop-off fell to &lt;5% as interaction time dropped from 12s to 3s.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Site Map -->
+  <section class="sec">
+    <span class="num reveal">03 · Site Map</span>
+    <h2 class="lead-h reveal">Structural navigation.</h2>
+    <p class="body-xl maxw reveal" style="margin-bottom:40px">The structural foundation handles multiple data streams without overwhelming the user. Mapping a clear path from Dashboard → Insights → Logs → AI Assistance keeps critical health information always accessible.</p>
+    <div class="sitemap reveal">
+      <div class="sm-hub">
+        <div class="sm-bar">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s7 8 7 12a7 7 0 1 1-14 0c0-4 7-12 7-12z"/></svg></span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V9M12 19V5M19 19v-7"/></svg></span>
+          <span class="ic add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21h10M8 21c0-5-4-5-4-10a8 8 0 0 1 16 0c0 5-4 5-4 10"/></svg></span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg></span>
+        </div>
+        <div class="sm-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div>
+      </div>
+      <svg class="sm-links" viewBox="0 0 6 1" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2.55 0 C0.5 0.5,0.5 0.5,0.5 1"/>
+        <path d="M2.78 0 C1.5 0.58,1.5 0.58,1.5 1"/>
+        <path d="M3 0 C2.5 0.64,2.5 0.64,2.5 1"/>
+        <path d="M3 0 C3.5 0.64,3.5 0.64,3.5 1"/>
+        <path d="M3.22 0 C4.5 0.58,4.5 0.58,4.5 1"/>
+        <path d="M4.05 0 C5.5 0.42,5.5 0.42,5.5 1"/>
+      </svg>
+      <div class="smcols">
+        <div class="smcol">
+          <div class="smnode head">Glucose</div>
+          <div class="smnode">Date &amp; weather</div>
+          <div class="smnode">Your statistics</div>
+          <div class="smnode">Why?</div>
+          <div class="smnode">Solution</div>
+          <div class="smnode">Entry</div>
+          <div class="smnode act">Reminders</div>
+        </div>
+        <div class="smcol">
+          <div class="smnode head">Insights</div>
+          <div class="smnode">Detailed insight</div>
+          <div class="smnode act">Report</div>
+          <div class="smnode">Hourly insights</div>
+          <div class="smnode">Dotted — Manual</div>
+          <div class="smnode">Clean line — Automatic</div>
+        </div>
+        <div class="smcol">
+          <div class="smnode head">Logs</div>
+          <div class="smnode">Manual or Automatic</div>
+          <div class="smnode">Exercise</div>
+          <div class="smnode">Food</div>
+          <div class="smnode">Steps</div>
+          <div class="smnode">Medication</div>
+        </div>
+        <div class="smcol">
+          <div class="smnode head">Task to do</div>
+          <div class="smnode">Enter manually</div>
+          <div class="smnode">Auto by solution</div>
+          <div class="smnode">Reminder</div>
+        </div>
+        <div class="smcol">
+          <div class="smnode head">AI Assistant</div>
+          <div class="smnode act">Prediabetes risk test</div>
+          <div class="smnode">Ask any Q/A</div>
+        </div>
+        <div class="smcol">
+          <div class="smnode head">Setting &amp; Info</div>
+          <div class="smnode">Dark / Light mode</div>
+          <div class="smnode">Account</div>
+          <div class="smnode act">Join the community</div>
+          <div class="smnode">Personalization</div>
+          <div class="smnode">About us</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Core Features -->
+  <section class="sec">
+    <span class="num reveal">04 · Core Features</span>
+    <h2 class="lead-h reveal">The Bento ecosystem.</h2>
+    <div class="bento reveal">
+      <div class="fcard">
+        <div class="txt">
+          <div class="kk">Real-time Tracking</div>
+          <h3>See every reading, as it happens.</h3>
+          <p>Live glucose curves with before/after-meal context and a medication overlay — trends are obvious at a glance.</p>
+        </div>
+        <div class="media"><img src="clarify-insight.png" alt="Real-time glucose tracking chart" /></div>
+        <div class="glow"></div>
+      </div>
+      <div class="fcard">
+        <div class="txt">
+          <div class="kk">Smart Reminders</div>
+          <h3>Never miss a dose or a check-up.</h3>
+          <p>Context-aware weekly and monthly reminders that adapt to your routine, each with a one-tap action.</p>
+        </div>
+        <div class="media"><img src="clarify-reminder.png" alt="Weekly and monthly reminders" /></div>
+        <div class="glow"></div>
+      </div>
+      <div class="fcard">
+        <div class="txt">
+          <div class="kk">Effortless Logging</div>
+          <h3>Add an insight in seconds.</h3>
+          <p>Manual or automatic glucose entry with state, meal type and time — built for speed during a busy day.</p>
+        </div>
+        <div class="media"><img src="clarify-log.png" alt="Add glucose reading log screen" /></div>
+        <div class="glow"></div>
+      </div>
+      <div class="fcard">
+        <div class="txt">
+          <div class="kk">Reports</div>
+          <h3>Doctor-ready in one export.</h3>
+          <p>Choose exactly what to share — glucose, medication, labs and more — and hand over a clean clinical report.</p>
+        </div>
+        <div class="media"><img src="clarify-report.png" alt="Report for doctor export screen" /></div>
+        <div class="glow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Engineering Logic -->
+  <section class="sec">
+    <span class="num reveal">05 · The Engineering Logic</span>
+    <h2 class="lead-h reveal">Defining the solution architecture.</h2>
+    <p class="body-xl maxw reveal">Every interface element was engineered to solve a specific friction point in the patient’s daily life. I identified four critical hurdles and built a targeted UI intervention for each.</p>
+    <div class="friction reveal">
+      <div class="ruler reveal">
+        <div class="ticks top"></div>
+        <div class="ticks bot"></div>
+        <div class="baseline"></div>
+        <div class="fill"></div>
+        <div class="knob"></div>
+        <div class="slider"></div>
+        <div class="rp top p1"><div class="id">01</div><h4>Numerical Anxiety</h4><div class="desc">Raw data points without context create stress.</div><div class="sol">The Triple-Metric Dashboard (Latest, Previous, Highest) for immediate situational awareness.</div><div class="conn"></div></div>
+        <div class="rp top p3"><div class="id">03</div><h4>Data Isolation</h4><div class="desc">Glucose levels are viewed separately from treatment.</div><div class="sol">Integrated “Insight” engine correlating glucose velocity directly with medication units.</div><div class="conn"></div></div>
+        <div class="rp bot p2"><div class="conn"></div><div class="id">02</div><h4>Interaction Friction</h4><div class="desc">High effort in logging leads to user drop-off.</div><div class="sol">A unified “Add Insight” hybrid portal: manual + automated device sync.</div></div>
+        <div class="rp bot p4"><div class="conn"></div><div class="id">04</div><h4>Action Delay</h4><div class="desc">Users see a problem but don’t know the fix.</div><div class="sol">Proactive VaidyaAI intervention — e.g. a “10-minute walk” during detected spikes.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Visual Deep-Dive -->
+  <section class="sec">
+    <span class="num reveal">06 · Visual Deep-Dive</span>
+    <h2 class="lead-h reveal">The Home &amp; Streak system.</h2>
+    <p class="body-xl maxw reveal" style="margin-bottom:56px">The home screen does two jobs at once — explain a glucose spike the moment it happens, and reward the daily habit of logging.</p>
+    <div class="dd-stage reveal">
+      <img class="phone-img" src="clarify-streak.png" alt="Clarify home — Spike insight and Streak tracker" />
+      <div class="callout spike">
+        <span class="dot"></span><span class="arm"></span>
+        <div class="ctxt"><span class="lbl">Spike, explained</span><p>XAI names the likely cause (“Rice at lunch”) and offers a 1-tap fix — Start a 10-minute walk.</p></div>
+      </div>
+      <div class="callout streak">
+        <span class="dot"></span><span class="arm"></span>
+        <div class="ctxt"><span class="lbl">Streak system</span><p>A rolling weekly streak rewards the effort of logging, not just “good numbers.”</p></div>
+      </div>
+      <div class="callout insight">
+        <div class="ctxt"><span class="lbl">Personalised Insight</span><p>Insulin, medication, steps and calories — the day’s key metrics surfaced in one glanceable grid.</p></div>
+        <span class="arm"></span><span class="dot"></span>
+      </div>
+    </div>
+    <div class="dd dd-solo" style="margin-top:72px">
+      <div class="info reveal">
+        <div class="item">
+          <div class="h"><span class="n">01</span><h3>The Home &amp; Streak Logic</h3></div>
+          <p>Engineered for 0.8s glanceability. The central 3D droplet gives immediate metabolic status, while the Rolling Streak System reinforces consistency by rewarding the “effort of logging” rather than just “good numbers.”</p>
+        </div>
+        <div class="item">
+          <div class="h"><span class="n">02</span><h3>XAI-Driven Insights</h3></div>
+          <p>Moving beyond raw data, the Insights engine uses Explainable AI to correlate glucose velocity with meal logs — turning a “Spike” into a “Lesson” with a clear root cause and a 1-tap physiological intervention.</p>
+        </div>
+        <div class="item">
+          <div class="h"><span class="n">03</span><h3>Insights: Predictive Logic</h3></div>
+          <p>A Dual-Axis Velocity Graph correlates glucose levels directly with medication units — transforming static data into a metabolic trajectory so users can spot “The Why” before it becomes a clinical risk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 Final Gallery -->
+  <section class="sec">
+    <span class="num reveal" style="text-align:center">07 · Final Screens</span>
+    <h2 class="lead-h reveal" style="margin:0 auto 40px;text-align:center;max-width:none">The complete ecosystem.</h2>
+    <div class="finalshot reveal">
+      <img src="clarify-final.png" alt="The complete Clarify screen flow — menu, home, insights, glucose log, VaidyaAI assistant, doctor report and reminders" />
+    </div>
+  </section>
+
+  <!-- Conclusion -->
+  <section class="sec concl">
+    <span class="num reveal">Conclusion</span>
+    <h2 class="lead-h reveal">Restoring control through clarity.</h2>
+    <div class="cols">
+      <div class="reveal">
+        <h3>Key Learning</h3>
+        <p>Medical design is not just about data visualization — it’s about cognitive-load management. By treating glucose spikes as “velocity vectors” rather than static points, we shift the user from a reactive state to a proactive one.</p>
+      </div>
+      <div class="reveal">
+        <h3>Final Thoughts</h3>
+        <p>Clarify stands as a testament to engineering-led design. It proves that when we simplify the complex, we don’t just improve an interface — we improve a life.</p>
+      </div>
+    </div>
+    <div class="tags reveal" style="justify-content:center">
+      <span class="tag">mHealth</span>
+      <span class="tag">XAI</span>
+      <span class="tag">Data Viz</span>
+      <span class="tag">UX Research</span>
+      <span class="tag">Mobile</span>
+      <span class="tag">Figma</span>
+    </div>
+  </section>
+</main>
+
+<section class="outro reveal">
+  <div class="wrap">
+    <h2 class="q">When we simplify the complex, we improve a life.</h2>
+    <p>If Clarify resonated, I’d love to talk about designing for high-stakes, human-centred products.</p>
+    <div class="links">
+      <a href="mailto:work.snehabiradar@gmail.com">Email</a>
+      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="#" target="_blank" rel="noopener">Behance</a>
+    </div>
+  </div>
+</section>
+
+<script src="image-slot.js"></script>
+<script>
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  const reveals = Array.from(document.querySelectorAll('.reveal'));
+  document.querySelectorAll('.ruler .ticks').forEach(function(row){for(var i=0;i<61;i++){var t=document.createElement('i');if(i%10===0)t.className='maj';else if(i%5===0)t.className='med';row.appendChild(t);}});
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((e)=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold:0, rootMargin:'0px 0px -6% 0px' });
+    reveals.forEach((el)=>io.observe(el));
+  }
+</script>
+</body>
+</html>
