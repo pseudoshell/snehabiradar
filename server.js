@@ -1,10 +1,10 @@
 // Zero-dependency static file server for the portfolio.
-// Serves portfolio/projects/ so the main page loads at http://localhost:3000/
+// Serves the repo root so the main page loads at http://localhost:3000/
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.join(__dirname, "portfolio", "projects");
+const ROOT = __dirname;
 const PORT = process.env.PORT || 3000;
 
 const MIME = {

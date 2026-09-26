@@ -17,9 +17,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     {"id":"baking",     "label":"Baking pastries", "tone":"baking"}
   ],
   "projects": [
-    {"id":"p1","title":"MAPS 2.0 — Safety & Accessibility","episode":"The One Where The Map Saw People","company":"Google Maps Redesign","role":"Lead UI/UX","year":"2025","tag":"PRODUCT","outcome":"Reimagined Google Maps to prioritise certainty over speed — illuminated safe paths and live accessibility overlays.","thumbA":"#26120a","thumbB":"#0e0805","href":"maps-2.0.html","thumb":"hero-city.png"},
-    {"id":"p2","title":"Clarify — The XAI Diabetes App","episode":"The One That Made Numbers Make Sense","company":"mHealth · Chronic Care","role":"Product Designer","year":"2025","tag":"MOBILE","outcome":"Solving “numerical fatigue” in diabetes care — turning raw glucose data into actionable metabolic trajectories.","thumbA":"#1a0608","thumbB":"#0a0203","href":"clarify.html","thumb":"clarify-thumb.png"},
-    {"id":"p3","title":"Binaried — Unified Workspace OS","episode":"The One Where Everything Lived In One Place","company":"Binaried · Internal Tools","role":"Product &amp; UI Designer","year":"2026","tag":"DASHBOARD","outcome":"A unified business workspace — dashboards, sales analytics, admin and config — built on a single purple design system and cognitive-load principles.","thumbA":"#7B61FF","thumbB":"#4a32c0","href":"binaried.html","thumb":"binaried-thumb.png"},
+    {"id":"p1","title":"MAPS 2.0 — Safety & Accessibility","episode":"The One Where The Map Saw People","company":"Google Maps Redesign","role":"Lead UI/UX","year":"2025","tag":"PRODUCT","outcome":"Reimagined Google Maps to prioritise certainty over speed — illuminated safe paths and live accessibility overlays.","thumbA":"#26120a","thumbB":"#0e0805","href":"projects/maps-2.0.html","thumb":"projects/hero-city.png"},
+    {"id":"p2","title":"Clarify — The XAI Diabetes App","episode":"The One That Made Numbers Make Sense","company":"mHealth · Chronic Care","role":"Product Designer","year":"2025","tag":"MOBILE","outcome":"Solving “numerical fatigue” in diabetes care — turning raw glucose data into actionable metabolic trajectories.","thumbA":"#1a0608","thumbB":"#0a0203","href":"projects/clarify.html","thumb":"projects/clarify-thumb.png"},
+    {"id":"p3","title":"Binaried — Unified Workspace OS","episode":"The One Where Everything Lived In One Place","company":"Binaried · Internal Tools","role":"Product &amp; UI Designer","year":"2026","tag":"DASHBOARD","outcome":"A unified business workspace — dashboards, sales analytics, admin and config — built on a single purple design system and cognitive-load principles.","thumbA":"#7B61FF","thumbB":"#4a32c0","href":"projects/binaried.html","thumb":"projects/binaried-thumb.png"},
     {"id":"p4","title":"The Network handbook","episode":"The One With The Operating Manual","company":"Outsource","role":"Brand & Strategy","year":"2023","tag":"BRAND","outcome":"120-page culture and operating manual for a remote design network. Print + web.","thumbA":"#2a2a2a","thumbB":"#101010"}
   ]
 }/*EDITMODE-END*/;
@@ -151,10 +151,10 @@ function Pill({ pill, active, dim, onClick }) {
 
   // Some pills have an image dot rather than an SVG icon.
   const dotImage = {
-    about:      "about-me.png",
-    osource:    "osrc.png",
-    baking:     "pastry.jpg",
-    psychology: "psychology.png"
+    about:      "assets/about-me.png",
+    osource:    "assets/osrc.png",
+    baking:     "assets/pastry.jpg",
+    psychology: "assets/psychology.png"
   }[pill.id];
 
   const dotIcon = pill.icon || {
@@ -691,7 +691,7 @@ function AboutOverlay({ open, onClose }) {
           <div className="about-photo">
             <span className="tape tape-tl"></span>
             <span className="tape tape-br"></span>
-            <img src="about-character.png" alt="Illustrated portrait of Sneha" />
+            <img src="assets/about-character.png" alt="Illustrated portrait of Sneha" />
           </div>
 
           {notes.map((n,i)=>(
@@ -753,8 +753,8 @@ function Hero({ data }) {
   return (
     <div className="hero">
       <div className="avatar">
-        <img className="av-default" src="Profile.gif" alt="" />
-        <img className="av-hover" src="annoying.gif" alt="" />
+        <img className="av-default" src="assets/Profile.gif" alt="" />
+        <img className="av-hover" src="assets/annoying.gif" alt="" />
       </div>
       <div className="hero-text">
         <h1>{data.name}</h1>
@@ -891,7 +891,7 @@ function App() {
         <CardEthosOrange dim={isDim("ethosOr")} count={t.projects.length} onOpen={()=>setWorkOpen(true)} />
         <CardImage
           id="img-friends-1"
-          src="friends-door.webp"
+          src="assets/friends-door.webp"
           objectPosition="38% 50%"
           caption="Could recite every line, still cries at the last episode. No regrets."
           dim={isDim("img1")}
@@ -901,8 +901,8 @@ function App() {
 
         <CardImage
           id="img-friends-2"
-          src="chandler.gif"
-          hoverSrc="chandler-hover.gif"
+          src="assets/chandler.gif"
+          hoverSrc="assets/chandler-hover.gif"
           dim={isDim("img2")}
           span="span-7"
         />
@@ -991,7 +991,7 @@ function FooterMark({ weight }) {
   return (
     <div>
       <div className="footer-mark">
-        <img className="ava2" src="footer-char.png" alt="" />
+        <img className="ava2" src="assets/footer-char.png" alt="" />
         <div className="big" style={{fontWeight: weight}}>sneha</div>
       </div>
       <div className="foot-meta">
